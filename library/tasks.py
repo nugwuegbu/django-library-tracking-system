@@ -18,3 +18,13 @@ def send_loan_notification(loan_id):
         )
     except Loan.DoesNotExist:
         pass
+
+
+def check_overdue_loans():
+    loans = Loan.objects.filter(is_returned = False ).values()
+
+    for loan in loans.items():
+        if loan.get_check_days() >= loan.due_date:
+           send_loan_notification.delay(loan.id)
+    return
+
